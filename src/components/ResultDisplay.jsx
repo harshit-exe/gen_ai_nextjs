@@ -23,7 +23,7 @@ export function ResultDisplay({ state, selectedTask }) {
     return (
       <Card className="mt-8 bg-red-50">
         <CardContent className="p-6">
-          <p className="text-red-600">Error: Failed to parse content. Please try again.</p>
+          <p className="text-red-600">Error Failed to parse content. Please try again</p>
           <details className="mt-2">
             <summary className="cursor-pointer text-sm text-gray-600">Show raw response</summary>
             <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">{state.content}</pre>
