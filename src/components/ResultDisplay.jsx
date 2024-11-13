@@ -173,7 +173,7 @@ export function ResultDisplay({ state, selectedTask }) {
         {selectedTask === "quotes" && (
           <div className="space-y-4">
             <blockquote className="text-2xl italic text-gray-700 border-l-4 border-yellow-500 pl-4 py-2">
-            {content.quote || "No quote generated"}
+              {content.quote || "No quote generated"}
             </blockquote>
             <p className="text-right text-gray-600">
               - {content.author || "Unknown"}
