@@ -1,94 +1,118 @@
-import React, { useState, useRef } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Check, Copy, Download } from 'lucide-react'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { TASKS } from "../app/page"
+import React, { useState, useRef } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Check, Copy, Download } from "lucide-react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { TASKS } from "../app/page";
 
 export function ResultDisplay({ state, selectedTask }) {
-  const [copied, setCopied] = useState(false)
-  const [downloadFormat, setDownloadFormat] = useState("txt")
-  const resultRef = useRef(null)
+  const [copied, setCopied] = useState(false);
+  const [downloadFormat, setDownloadFormat] = useState("txt");
+  const resultRef = useRef(null);
 
-  if (!state.content) return null
+  if (!state.content) return null;
 
-  let content
+  let content;
   try {
-    content = JSON.parse(state.content)
+    content = JSON.parse(state.content);
   } catch (error) {
-    console.error("Failed to parse content:", error)
+    console.error("Failed to parse content:", error);
     return (
       <Card className="mt-8 bg-red-50">
         <CardContent className="p-6">
-          <p className="text-red-600">Error: Failed to parse content. Please try again.</p>
+          <p className="text-red-600">
+            Error: Failed to parse content. Please try again.
+          </p>
           <details className="mt-2">
-            <summary className="cursor-pointer text-sm text-gray-600">Show raw response</summary>
-            <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">{state.content}</pre>
+            <summary className="cursor-pointer text-sm text-gray-600">
+              Show raw response
+            </summary>
+            <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
+              {state.content}
+            </pre>
           </details>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   const handleCopy = () => {
     if (resultRef.current) {
-      navigator.clipboard.writeText(resultRef.current.innerText)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      navigator.clipboard.writeText(resultRef.current.innerText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }
+  };
 
   const handleDownload = () => {
     if (state.content) {
-      const content = JSON.parse(state.content)
-      let downloadContent = ""
-      let filename = ""
+      const content = JSON.parse(state.content);
+      let downloadContent = "";
+      let filename = "";
 
       switch (selectedTask) {
         case "code":
-          downloadContent = content.code || ""
-          filename = "generated_code"
-          break
+          downloadContent = content.code || "";
+          filename = "generated_code";
+          break;
         case "copywriting":
-          downloadContent = `${content.title || ""}\n\n${(content.sections || []).map(s => `${s.heading || ""}\n${s.content || ""}`).join('\n\n')}`
-          filename = "generated_copy"
-          break
+          downloadContent = `${content.title || ""}\n\n${(
+            content.sections || []
+          )
+            .map((s) => `${s.heading || ""}\n${s.content || ""}`)
+            .join("\n\n")}`;
+          filename = "generated_copy";
+          break;
         case "quotes":
-          downloadContent = `${content.quote || ""} - ${content.author || ""}`
-          filename = "generated_quote"
-          break
+          downloadContent = `${content.quote || ""} - ${content.author || ""}`;
+          filename = "generated_quote";
+          break;
         case "creative":
-          downloadContent = `${content.title || ""}\n\n${(content.paragraphs || []).join('\n\n')}`
-          filename = "creative_writing"
-          break
+          downloadContent = `${content.title || ""}\n\n${(
+            content.paragraphs || []
+          ).join("\n\n")}`;
+          filename = "creative_writing";
+          break;
         case "analysis":
-          downloadContent = `Summary: ${content.summary || ""}\n\nKey Points:\n${(content.keyPoints || []).join('\n')}\n\nSentiment: ${content.sentiment || ""}`
-          filename = "text_analysis"
-          break
+          downloadContent = `Summary: ${
+            content.summary || ""
+          }\n\nKey Points:\n${(content.keyPoints || []).join(
+            "\n"
+          )}\n\nSentiment: ${content.sentiment || ""}`;
+          filename = "text_analysis";
+          break;
       }
 
-      const blob = new Blob([downloadContent], { type: "text/plain" })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `${filename}.${downloadFormat}`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      const blob = new Blob([downloadContent], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${filename}.${downloadFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-  }
+  };
 
   const commonStats = (
     <div className="mt-4 flex justify-between text-sm text-gray-500">
       <span>Word count: {content.wordCount || 0}</span>
       <span>Characters: {content.characterCount || 0}</span>
-      {content.readingTime && <span>Reading time: {content.readingTime} min</span>}
+      {content.readingTime && (
+        <span>Reading time: {content.readingTime} min</span>
+      )}
     </div>
-  )
+  );
 
   const responseContent = (
     <Card className="mt-8">
@@ -104,12 +128,18 @@ export function ResultDisplay({ state, selectedTask }) {
               {content.usage && <TabsTrigger value="usage">Usage</TabsTrigger>}
             </TabsList>
             <TabsContent value="code">
-              <SyntaxHighlighter language="javascript" style={vscDarkPlus} className="rounded-lg">
+              <SyntaxHighlighter
+                language="javascript"
+                style={vscDarkPlus}
+                className="rounded-lg"
+              >
                 {content.code || "No code generated"}
               </SyntaxHighlighter>
             </TabsContent>
             <TabsContent value="explanation">
-              <p className="text-gray-700">{content.explanation || "No explanation provided"}</p>
+              <p className="text-gray-700">
+                {content.explanation || "No explanation provided"}
+              </p>
             </TabsContent>
             {content.usage && (
               <TabsContent value="usage">
@@ -120,11 +150,17 @@ export function ResultDisplay({ state, selectedTask }) {
         )}
         {selectedTask === "copywriting" && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">{content.title || "Untitled"}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {content.title || "Untitled"}
+            </h2>
             {(content.sections || []).map((section, index) => (
               <div key={index} className="space-y-2">
-                <h3 className="text-xl font-semibold text-gray-800">{section.heading || `Section ${index + 1}`}</h3>
-                <p className="text-gray-700">{section.content || "No content"}</p>
+                <h3 className="text-xl font-semibold text-gray-800">
+                  {section.heading || `Section ${index + 1}`}
+                </h3>
+                <p className="text-gray-700">
+                  {section.content || "No content"}
+                </p>
               </div>
             ))}
             {content.callToAction && (
@@ -139,7 +175,9 @@ export function ResultDisplay({ state, selectedTask }) {
             <blockquote className="text-2xl italic text-gray-700 border-l-4 border-yellow-500 pl-4 py-2">
               &ldquo;{content.quote || "No quote generated"}&rdquo;
             </blockquote>
-            <p className="text-right text-gray-600">- {content.author || "Unknown"}</p>
+            <p className="text-right text-gray-600">
+              - {content.author || "Unknown"}
+            </p>
             {content.context && (
               <div className="mt-4">
                 <h4 className="font-semibold text-gray-800">Context:</h4>
@@ -149,7 +187,10 @@ export function ResultDisplay({ state, selectedTask }) {
             {content.tags && content.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4">
                 {content.tags.map((tag, index) => (
-                  <span key={index} className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm">
+                  <span
+                    key={index}
+                    className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm"
+                  >
                     {tag}
                   </span>
                 ))}
@@ -159,9 +200,13 @@ export function ResultDisplay({ state, selectedTask }) {
         )}
         {selectedTask === "creative" && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">{content.title || "Untitled"}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {content.title || "Untitled"}
+            </h2>
             {(content.paragraphs || []).map((paragraph, index) => (
-              <p key={index} className="text-gray-700">{paragraph}</p>
+              <p key={index} className="text-gray-700">
+                {paragraph}
+              </p>
             ))}
             {content.characters && content.characters.length > 0 && (
               <div className="mt-4">
@@ -183,7 +228,9 @@ export function ResultDisplay({ state, selectedTask }) {
               <TabsTrigger value="sentiment">Sentiment</TabsTrigger>
             </TabsList>
             <TabsContent value="summary">
-              <p className="text-gray-700">{content.summary || "No summary provided"}</p>
+              <p className="text-gray-700">
+                {content.summary || "No summary provided"}
+              </p>
             </TabsContent>
             <TabsContent value="keyPoints">
               <ul className="list-disc pl-5 text-gray-700">
@@ -193,14 +240,22 @@ export function ResultDisplay({ state, selectedTask }) {
               </ul>
             </TabsContent>
             <TabsContent value="sentiment">
-              <p className="text-gray-700">Overall sentiment: {content.sentiment || "Not analyzed"}</p>
+              <p className="text-gray-700">
+                Overall sentiment: {content.sentiment || "Not analyzed"}
+              </p>
               {content.sentimentBreakdown && (
                 <div className="mt-4">
-                  <h4 className="font-semibold text-gray-800">Sentiment Breakdown:</h4>
+                  <h4 className="font-semibold text-gray-800">
+                    Sentiment Breakdown:
+                  </h4>
                   <ul className="list-disc pl-5 text-gray-700">
-                    {Object.entries(content.sentimentBreakdown).map(([key, value]) => (
-                      <li key={key}>{key}: {value}%</li>
-                    ))}
+                    {Object.entries(content.sentimentBreakdown).map(
+                      ([key, value]) => (
+                        <li key={key}>
+                          {key}: {value}%
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
               )}
@@ -210,7 +265,7 @@ export function ResultDisplay({ state, selectedTask }) {
         {commonStats}
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <div className="mt-8">
@@ -223,7 +278,11 @@ export function ResultDisplay({ state, selectedTask }) {
             className="bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
             onClick={handleCopy}
           >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
             <span className="sr-only">Copy to clipboard</span>
           </Button>
           <Select value={downloadFormat} onValueChange={setDownloadFormat}>
@@ -249,5 +308,5 @@ export function ResultDisplay({ state, selectedTask }) {
       </div>
       {responseContent}
     </div>
-  )
+  );
 }
