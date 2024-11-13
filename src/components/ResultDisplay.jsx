@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import React, { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -23,7 +23,7 @@ export function ResultDisplay({ state, selectedTask }) {
     return (
       <Card className="mt-8 bg-red-50">
         <CardContent className="p-6">
-          <p className="text-red-600">Error Failed to parse content. Please try again</p>
+          <p className="text-red-600">Error: Failed to parse content. Please try again.</p>
           <details className="mt-2">
             <summary className="cursor-pointer text-sm text-gray-600">Show raw response</summary>
             <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">{state.content}</pre>
@@ -57,7 +57,7 @@ export function ResultDisplay({ state, selectedTask }) {
           filename = "generated_copy"
           break
         case "quotes":
-          downloadContent = `"${content.quote || ""}" - ${content.author || ""}`
+          downloadContent = `${content.quote || ""} - ${content.author || ""}`
           filename = "generated_quote"
           break
         case "creative":
@@ -137,7 +137,7 @@ export function ResultDisplay({ state, selectedTask }) {
         {selectedTask === "quotes" && (
           <div className="space-y-4">
             <blockquote className="text-2xl italic text-gray-700 border-l-4 border-yellow-500 pl-4 py-2">
-              "{content.quote || "No quote generated"}"
+              &ldquo;{content.quote || "No quote generated"}&rdquo;
             </blockquote>
             <p className="text-right text-gray-600">- {content.author || "Unknown"}</p>
             {content.context && (
